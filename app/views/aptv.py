@@ -98,8 +98,10 @@ def get_landing_data(url, params):
 
         for shelf in data.get('data', {}).get('canvas', {}).get('shelves', []):
             shelf_id = shelf.get('id')
-            shelf_title = 'Channels on Apple TV' if shelf_id == 'edt.col.5d6da1c0-92df-4ee0-a215-c939ad7dfc02'\
-                            else shelf.get('title')
+
+            shelf_title = shelf.get('title', '')
+            shelf_title = 'Channels on Apple TV' if ((not shelf_title) and (shelf.get('displayType') == 'channelLockup')) else shelf_title
+
             more = True if shelf.get('nextToken') else False
 
             shelf_items = []

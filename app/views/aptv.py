@@ -38,6 +38,23 @@ class views:
         collection = get_collection_data(url, params)
         return render_template('aptv/collection.html', collection=collection, country=country, lang=lang)
 
+    def bundle(country, lang, bundle_id):
+        url = f'https://uts-api.itunes.apple.com/uts/v2/view/product/{bundle_id}'
+
+        params = {
+            "caller": "js",
+            "gac": "true",
+            "locale": f"{lang}",
+            "nextToken": "0",
+            "pfm": "iphone",
+            "sf": "143470",
+            "utsk": "e2648c8552395150::::::ac0e30f9a5790f93",
+            "v": "36"
+        }
+
+        bundle = get_bundle_data(url, params)
+        return render_template('aptv/bundle.html', bundle=bundle, country=country, lang=lang)
+
 
 def get_landing_data(url, params):
     shelves = []
@@ -68,7 +85,7 @@ def get_landing_data(url, params):
                 image = image if image else item.get('images', {}).get('coverArt16X9', {})
                 image = image if image else item.get('images', {}).get('coverArt', {})
                 w = int(image['width'] * 225 / image['height'])  if 'width' in image else 0
-                h = 225  if 'width' in image else 0
+                h = 225 if 'width' in image else 0
                 item_image_url = image.get('url', '').replace('{w}', str(w)).replace('{h}', str(h)).replace('{f}', 'png')
 
                 item_badgeText = item.get('badge', {}).get('text', '')
@@ -145,3 +162,50 @@ def get_collection_data(url, params):
             break
 
     return collection
+
+
+def get_bundle_data(url, params):
+    bundle = {
+        'bundle_title': '',
+        'bundle_id': '',
+        'bundle_items': []
+    }
+    nextToken = 0
+    index = 0
+    while True:
+        params['nextToken'] = nextToken
+        res = requests.get(url, params=params)
+        data = json.loads(res.text)
+
+        bundle_title = data.get('data', {}).get('content', {}).get('title', '')
+        bundle_id = data.get('data', {}).get('content', {}).get('id', '')
+
+        bundle['bundle_title'] = bundle['bundle_title'] if bundle['bundle_title'] else bundle_title
+        bundle['bundle_id'] = bundle['bundle_id'] if bundle['bundle_id'] else bundle_id
+
+        for item in data.get('data', {}).get('movies', []):
+            item_id = item.get('canonicalId', '')
+            item_type = item.get('type', '')
+            item_title = item.get('title', '')
+            item_url = item.get('url', '')
+
+            image = item.get('images', {}).get('shelfImage', {})
+            image = image if image else item.get('images', {}).get('coverArt16X9', {})
+            image = image if image else item.get('images', {}).get('coverArt', {})
+            w = int(image['width'] * 225 / image['height']) if 'width' in image else 0
+            h = 255 if 'width' in image else 0
+            item_image_url = image.get('url', '').replace('{w}', str(w)).replace('{h}', str(h)).replace('{f}', 'png')
+
+            bundle['bundle_items'].append({
+                'item_id': item_id,
+                'item_type': item_type,
+                'item_title': item_title,
+                'item_url': item_url,
+                'item_image_url': item_image_url
+            })
+
+        nextToken = data.get('data', {}).get('nextToken')
+        if not nextToken:
+            break
+
+    return bundle

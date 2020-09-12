@@ -57,7 +57,7 @@
         </div>
         <div class="col-1 align-self-center">
             {% if shelf['more'] %}
-            <a href="{{ url_for('collection_page', country=country, lang=lang, shelf_id=shelf['shelf_id']) }}" class="btn btn-outline-info">More</a>
+            <a href="{{ url_for('collection_page', country=country, lang=lang, collection_id=shelf['shelf_id']) }}" class="btn btn-outline-info">More</a>
             {% endif %}
         </div>
     </div>
@@ -68,7 +68,12 @@
                 <div class="swiper-wrapper">
                     {% for item in shelf['shelf_items'] %}
                     <div class="swiper-slide">
+
+                        {% if item['item_type'] == 'MovieBundle' %}
+                        <a href="{{ url_for('bundle_page', country=country, lang=lang, bundle_id=item['item_id']) }}">
+                        {% else %}
                         <a href="{{ item['item_url'] }}">
+                        {% endif %}
                             <img src="{{ item['item_image_url'] }}" alt="{{ item['item_title'] }}" title="{{ item['item_title'] }}" class="img-fluid rounded">
                             {% if item['item_badgeText'] %}
                             <span class="badgeText">{{ item['item_badgeText'] }}</span>

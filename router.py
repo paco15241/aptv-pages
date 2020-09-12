@@ -13,3 +13,7 @@ def landing_page(country, lang):
 def collection_page(country, lang, collection_id):
     return views.collection(country=country, lang=lang, collection_id=collection_id)
 
+@app.route('/<country>/<lang>/bundle/<bundle_id>')
+def bundle_page(country, lang, bundle_id):
+    return views.bundle(country=country, lang=lang, bundle_id=bundle_id)
+

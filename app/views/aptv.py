@@ -1,5 +1,5 @@
 from flask import render_template, abort
-from .. import country_code
+from .. import app, country_code
 import json, requests
 
 
@@ -14,14 +14,14 @@ class views:
             abort(404)
 
         params = {
-            "caller": "js",
-            "gac": "true",
+            "sf": country_code[country].lower(),
             "locale": f"{lang}",
             "nextToken": "0",
-            "pfm": "iphone",
-            "sf": country_code[country].lower(),
-            "utsk": "e2648c8552395150::::::ac0e30f9a5790f93",
-            "v": "36"
+            "caller": app.config["APTV_CALLER"],
+            "gac": app.config["GAC"],
+            "pfm": app.config["APTV_PFM"],
+            "utsk": app.config["APTV_UTSK"],
+            "v": app.config["APTV_V"],
         }
 
         shelves = get_landing_data(url, params)
@@ -34,14 +34,14 @@ class views:
             abort(404)
 
         params = {
-            "caller": "js",
-            "gac": "true",
+            "sf": country_code[country].lower(),
             "locale": f"{lang}",
             "nextToken": "0",
-            "pfm": "iphone",
-            "sf": country_code[country].lower(),
-            "utsk": "e2648c8552395150::::::ac0e30f9a5790f93",
-            "v": "36"
+            "caller": app.config["APTV_CALLER"],
+            "gac": app.config["GAC"],
+            "pfm": app.config["APTV_PFM"],
+            "utsk": app.config["APTV_UTSK"],
+            "v": app.config["APTV_V"],
         }
 
         collection = get_collection_data(url, params)
@@ -54,14 +54,14 @@ class views:
             abort(404)
 
         params = {
-            "caller": "js",
-            "gac": "true",
+            "sf": country_code[country].lower(),
             "locale": f"{lang}",
             "nextToken": "0",
-            "pfm": "iphone",
-            "sf": country_code[country].lower(),
-            "utsk": "e2648c8552395150::::::ac0e30f9a5790f93",
-            "v": "36"
+            "caller": app.config["APTV_CALLER"],
+            "gac": app.config["GAC"],
+            "pfm": app.config["APTV_PFM"],
+            "utsk": app.config["APTV_UTSK"],
+            "v": app.config["APTV_V"],
         }
 
         bundle = get_bundle_data(url, params)
@@ -74,14 +74,14 @@ class views:
             abort(404)
 
         params = {
-            "caller": "js",
-            "gac": "true",
+            "sf": country_code[country].lower(),
             "locale": f"{lang}",
             "nextToken": "0",
-            "pfm": "iphone",
-            "sf": country_code[country].lower(),
-            "utsk": "e2648c8552395150::::::ac0e30f9a5790f93",
-            "v": "36"
+            "caller": app.config["APTV_CALLER"],
+            "gac": app.config["GAC"],
+            "pfm": app.config["APTV_PFM"],
+            "utsk": app.config["APTV_UTSK"],
+            "v": app.config["APTV_V"],
         }
 
         room = get_room_data(url, params)
@@ -105,9 +105,7 @@ def get_landing_data(url, params):
             more = True if shelf.get('nextToken') else False
 
             shelf_items = []
-
-            items = shelf.get('items')
-            for item in items:
+            for item in shelf.get('items', []):
                 item_title = item.get('title', '')
                 item_title = item_title if item_title else item.get('name', '')
 

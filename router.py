@@ -17,3 +17,6 @@ def collection_page(country, lang, collection_id):
 def bundle_page(country, lang, bundle_id):
     return views.bundle(country=country, lang=lang, bundle_id=bundle_id)
 
+@app.route('/<country>/<lang>/room/<room_id>')
+def room_page(country, lang, room_id):
+    return views.room(country=country, lang=lang, room_id=room_id)

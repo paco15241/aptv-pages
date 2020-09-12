@@ -71,6 +71,8 @@
 
                         {% if item['item_type'] == 'MovieBundle' %}
                         <a href="{{ url_for('bundle_page', country=country, lang=lang, bundle_id=item['item_id']) }}">
+                        {% elif item['item_type'] == 'EditorialItem' %}
+                        <a href="{{ url_for('room_page', country=country, lang=lang, room_id=item['item_id']) }}">
                         {% else %}
                         <a href="{{ item['item_url'] }}">
                         {% endif %}

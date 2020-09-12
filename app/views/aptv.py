@@ -55,6 +55,23 @@ class views:
         bundle = get_bundle_data(url, params)
         return render_template('aptv/bundle.html', bundle=bundle, country=country, lang=lang)
 
+    def room(country, lang, room_id):
+        url = f'https://uts-api.itunes.apple.com/uts/v2/browse/room/{room_id}'
+
+        params = {
+            "caller": "js",
+            "gac": "true",
+            "locale": f"{lang}",
+            "nextToken": "0",
+            "pfm": "iphone",
+            "sf": "143470",
+            "utsk": "e2648c8552395150::::::ac0e30f9a5790f93",
+            "v": "36"
+        }
+
+        room = get_room_data(url, params)
+        return render_template('aptv/room.html', room=room, country=country, lang=lang)
+
 
 def get_landing_data(url, params):
     shelves = []
@@ -209,3 +226,80 @@ def get_bundle_data(url, params):
             break
 
     return bundle
+
+
+def get_room_data(url, params):
+    room = {
+        'room_id': '',
+        'room_title': '',
+        'room_img_url': '',
+        'room_shelves': []
+    }
+    nextToken = 0
+    while True:
+        params['nextToken'] = nextToken
+        res = requests.get(url, params=params)
+        data = json.loads(res.text)
+
+        room['room_id'] = room['room_id'] if room['room_id'] else data.get('data', {}).get('canvas', {}).get('id', '')
+        room['room_title'] = room['room_title'] if room['room_title'] else data.get('data', {}).get('canvas', {}).get(
+            'title', '')
+        if not room['room_img_url']:
+            canvasImage = data.get('data', {}).get('canvas', {}).get('images', {}).get('canvasImage', {})
+            w = canvasImage.get('width', 0)
+            h = canvasImage.get('height', 0)
+            room['room_img_url'] = canvasImage.get('url', '').replace('{w}', str(w)).replace('{h}', str(h)).replace(
+                '{f}', 'png')
+
+        for shelf in data.get('data', {}).get('canvas', {}).get('shelves', []):
+            shelf_id = shelf.get('id')
+            shelf_title = 'Channels on Apple TV' if shelf_id == 'edt.col.5d6da1c0-92df-4ee0-a215-c939ad7dfc02' \
+                else shelf.get('title')
+            more = True if shelf.get('nextToken') else False
+
+            shelf_items = []
+
+            items = shelf.get('items')
+            for item in items:
+                item_title = item.get('title', '')
+                item_title = item_title if item_title else item.get('name', '')
+
+                item_id = item.get('id')
+                item_type = item.get('type')
+                item_url = item.get('url')
+
+                image = item.get('images', {}).get('shelfImage', {})
+                image = image if image else item.get('images', {}).get('coverArt16X9', {})
+                image = image if image else item.get('images', {}).get('coverArt', {})
+                w = int(image['width'] * 225 / image['height']) if 'width' in image else 0
+                h = 225 if 'width' in image else 0
+                item_image_url = image.get('url', '').replace('{w}', str(w)).replace('{h}', str(h)).replace('{f}',
+                                                                                                            'png')
+
+                item_badgeText = item.get('badge', {}).get('text', '')
+                item_badgeText = item_badgeText if item_badgeText else item.get('showTitle', '')
+
+                if '{c}' not in item_image_url:
+                    shelf_items.append({
+                        'item_id': item_id,
+                        'item_type': item_type,
+                        'item_title': item_title,
+                        'item_url': item_url,
+                        'item_image_url': item_image_url,
+                        'item_badgeText': item_badgeText
+                    })
+
+            if shelf_items:
+                room['room_shelves'].append({
+                    'shelf_id': shelf_id,
+                    'shelf_title': shelf_title,
+                    'shelf_items': shelf_items,
+                    'more': more
+                })
+
+        nextToken = data.get('data', {}).get('canvas', {}).get('nextToken')
+        if not nextToken:
+            break
+
+    return room
+

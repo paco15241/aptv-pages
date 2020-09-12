@@ -18,7 +18,7 @@
       display: block;
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: none;
     }
 
     .swiper-button-next, .swiper-button-prev {
@@ -31,9 +31,8 @@
 
     /* badgeText */
     .swiper-slide {
-          position: relative;
-        }
-
+        position: relative;
+    }
     .badgeText {
       position: absolute;
       top: 8px;
@@ -41,6 +40,7 @@
 
       background-color: black;
       color: white;
+      padding: 2px;
     }
  </style>
 {% endblock %}
@@ -51,18 +51,18 @@
 <div class="container-fluid">
 
     {% for shelf in shelves %}
-    <div class="row justify-content-beteewn mt-5">
+    <div class="row justify-content-beteewn">
         <div class="col-11">
             <h1>{{ shelf['shelf_title'] }}</h1>
         </div>
         <div class="col-1 align-self-center">
             {% if shelf['more'] %}
-            <a href="{{ url_for('collection_page', country=country, lang=lang, shelf_id=shelf['shelf_id']) }}" class="btn btn-outline-info">看更多</a>
+            <a href="{{ url_for('collection_page', country=country, lang=lang, shelf_id=shelf['shelf_id']) }}" class="btn btn-outline-info">More</a>
             {% endif %}
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mb-5">
         <div class="col-12">
             <div class="swiper-container">
                 <div class="swiper-wrapper">
@@ -96,27 +96,27 @@
 <script>
     var swiper = new Swiper('.swiper-container', {
       slidesPerView: 4,
-      spaceBetween: 5,
+      spaceBetween: 2,
 
       // Responsive breakpoints
       breakpoints: {
-        // when window width is >= 320px
-        320: {
+        // when window width is >= 0px
+        0: {
           slidesPerView: 1,
-          spaceBetween: 0
+          spaceBetween: 5
         },
-        // when window width is >= 480px
-        480: {
-          slidesPerView: 1,
-          spaceBetween: 0
-        },
-        // when window width is >= 640px
-        640: {
+        // when window width is >= 820px
+        820: {
           slidesPerView: 2,
-          spaceBetween: 0
+          spaceBetween: 5
         },
-        // when window width is >= 800px
-        800: {
+        // when window width is >= 1240px
+        1240: {
+          slidesPerView: 3,
+          spaceBetween: 5
+        },
+        // when window width is >= 1660px
+        1660: {
           slidesPerView: 4,
           spaceBetween: 5
         },

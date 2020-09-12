@@ -54,37 +54,41 @@ def get_landing_data(url, params):
 
         for shelf in data.get('data', {}).get('canvas', {}).get('shelves', []):
             shelf_id = shelf.get('id')
-            shelf_title = shelf.get('title')
+            shelf_title = 'Channels on Apple TV' if shelf_id == 'edt.col.5d6da1c0-92df-4ee0-a215-c939ad7dfc02'\
+                            else shelf.get('title')
             more = True if shelf.get('nextToken') else False
 
             shelf_items = []
+
             items = shelf.get('items')
             for item in items:
-                item_title = item.get('title')
-
-                if not item_title:
-                    continue
+                item_title = item.get('title', '')
+                item_title = item_title if item_title else item.get('name', '')
 
                 item_id = item.get('id')
                 item_type = item.get('type')
                 item_url = item.get('url')
 
-                image = item.get('images', {}).get('coverArt16X9', {})
-                image = image if image else item.get('images', {}).get('shelfImage', {})
-                w = int(image['width'] * 225 / image['height'])
-                h = 225
+                image = item.get('images', {}).get('shelfImage', {})
+                image = image if image else item.get('images', {}).get('coverArt16X9', {})
+                image = image if image else item.get('images', {}).get('coverArt', {})
+                w = int(image['width'] * 225 / image['height'])  if 'width' in image else 0
+                h = 225  if 'width' in image else 0
                 item_image_url = image.get('url', '').replace('{w}', str(w)).replace('{h}', str(h)).replace('{f}', 'png')
 
-                item_badgeText = item.get('badge', {}).get('text')
+                item_badgeText = item.get('badge', {}).get('text', '')
+                item_badgeText = item_badgeText if item_badgeText else item.get('showTitle', '')
 
-                shelf_items.append({
-                    'item_id': item_id,
-                    'item_type': item_type,
-                    'item_title': item_title,
-                    'item_url': item_url,
-                    'item_image_url': item_image_url,
-                    'item_badgeText': item_badgeText
-                })
+                if '{c}' not in item_image_url:
+                    shelf_items.append({
+                        'item_id': item_id,
+                        'item_type': item_type,
+                        'item_title': item_title,
+                        'item_url': item_url,
+                        'item_image_url': item_image_url,
+                        'item_badgeText': item_badgeText
+                    })
+
 
             if shelf_items:
                 shelves.append({

@@ -1,19 +1,25 @@
-from flask import render_template
+from flask import render_template, abort
+from .. import country_code
 import json, requests
+
 
 class views:
     def index():
         return render_template('aptv/index.html')
-    
+
     def landing(country, lang):
         url = f'https://uts-api.itunes.apple.com/uts/v2/browse/watchNow'
+
+        if country.lower() not in country_code:
+            abort(404)
+
         params = {
             "caller": "js",
             "gac": "true",
             "locale": f"{lang}",
             "nextToken": "0",
             "pfm": "iphone",
-            "sf": "143470",
+            "sf": country_code[country].lower(),
             "utsk": "e2648c8552395150::::::ac0e30f9a5790f93",
             "v": "36"
         }
@@ -24,13 +30,16 @@ class views:
     def collection(country, lang, collection_id):
         url = f'https://uts-api.itunes.apple.com/uts/v2/browse/collection/{collection_id}'
 
+        if country.lower() not in country_code:
+            abort(404)
+
         params = {
             "caller": "js",
             "gac": "true",
             "locale": f"{lang}",
             "nextToken": "0",
             "pfm": "iphone",
-            "sf": "143470",
+            "sf": country_code[country].lower(),
             "utsk": "e2648c8552395150::::::ac0e30f9a5790f93",
             "v": "36"
         }
@@ -41,13 +50,16 @@ class views:
     def bundle(country, lang, bundle_id):
         url = f'https://uts-api.itunes.apple.com/uts/v2/view/product/{bundle_id}'
 
+        if country.lower() not in country_code:
+            abort(404)
+
         params = {
             "caller": "js",
             "gac": "true",
             "locale": f"{lang}",
             "nextToken": "0",
             "pfm": "iphone",
-            "sf": "143470",
+            "sf": country_code[country].lower(),
             "utsk": "e2648c8552395150::::::ac0e30f9a5790f93",
             "v": "36"
         }
@@ -58,13 +70,16 @@ class views:
     def room(country, lang, room_id):
         url = f'https://uts-api.itunes.apple.com/uts/v2/browse/room/{room_id}'
 
+        if country.lower() not in country_code:
+            abort(404)
+
         params = {
             "caller": "js",
             "gac": "true",
             "locale": f"{lang}",
             "nextToken": "0",
             "pfm": "iphone",
-            "sf": "143470",
+            "sf": country_code[country].lower(),
             "utsk": "e2648c8552395150::::::ac0e30f9a5790f93",
             "v": "36"
         }

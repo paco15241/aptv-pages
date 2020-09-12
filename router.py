@@ -1,5 +1,6 @@
 from app import app
 from app.views.aptv import views
+from flask import render_template
 
 @app.route('/')
 def index():
@@ -20,3 +21,7 @@ def bundle_page(country, lang, bundle_id):
 @app.route('/<country>/<lang>/room/<room_id>')
 def room_page(country, lang, room_id):
     return views.room(country=country, lang=lang, room_id=room_id)
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('aptv/404.html', title = '404'), 404

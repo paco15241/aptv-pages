@@ -17,14 +17,17 @@ class views:
             "sf": country_code[country].lower(),
             "locale": f"{lang}",
             "nextToken": "0",
-            "caller": app.config["APTV_CALLER"],
-            "gac": app.config["GAC"],
-            "pfm": app.config["APTV_PFM"],
-            "utsk": app.config["APTV_UTSK"],
-            "v": app.config["APTV_V"],
+            "caller": app.config.get('APTV_CALLER', None),
+            "gac": app.config.get('APTV_GAC', None),
+            "pfm": app.config.get('APTV_PFM', None),
+            "utsk": app.config.get('APTV_UTSK', None),
+            "v": app.config.get('APTV_V', None)
         }
 
-        shelves = get_landing_data(url, params)
+        try:
+            shelves = get_landing_data(url, params)
+        except:
+            abort(404)
         return render_template('aptv/landing.html', shelves=shelves, country=country, lang=lang)
 
     def collection(country, lang, collection_id):
@@ -37,14 +40,17 @@ class views:
             "sf": country_code[country].lower(),
             "locale": f"{lang}",
             "nextToken": "0",
-            "caller": app.config["APTV_CALLER"],
-            "gac": app.config["GAC"],
-            "pfm": app.config["APTV_PFM"],
-            "utsk": app.config["APTV_UTSK"],
-            "v": app.config["APTV_V"],
+            "caller": app.config.get('APTV_CALLER', None),
+            "gac": app.config.get('APTV_GAC', None),
+            "pfm": app.config.get('APTV_PFM', None),
+            "utsk": app.config.get('APTV_UTSK', None),
+            "v": app.config.get('APTV_V', None)
         }
 
-        collection = get_collection_data(url, params)
+        try:
+            collection = get_collection_data(url, params)
+        except:
+            abort(404)
         return render_template('aptv/collection.html', collection=collection, country=country, lang=lang)
 
     def bundle(country, lang, bundle_id):
@@ -57,14 +63,17 @@ class views:
             "sf": country_code[country].lower(),
             "locale": f"{lang}",
             "nextToken": "0",
-            "caller": app.config["APTV_CALLER"],
-            "gac": app.config["GAC"],
-            "pfm": app.config["APTV_PFM"],
-            "utsk": app.config["APTV_UTSK"],
-            "v": app.config["APTV_V"],
+            "caller": app.config.get('APTV_CALLER', None),
+            "gac": app.config.get('APTV_GAC', None),
+            "pfm": app.config.get('APTV_PFM', None),
+            "utsk": app.config.get('APTV_UTSK', None),
+            "v": app.config.get('APTV_V', None)
         }
 
-        bundle = get_bundle_data(url, params)
+        try:
+            bundle = get_bundle_data(url, params)
+        except:
+            abort(404)
         return render_template('aptv/bundle.html', bundle=bundle, country=country, lang=lang)
 
     def room(country, lang, room_id):
@@ -77,14 +86,17 @@ class views:
             "sf": country_code[country].lower(),
             "locale": f"{lang}",
             "nextToken": "0",
-            "caller": app.config["APTV_CALLER"],
-            "gac": app.config["GAC"],
-            "pfm": app.config["APTV_PFM"],
-            "utsk": app.config["APTV_UTSK"],
-            "v": app.config["APTV_V"],
+            "caller": app.config.get('APTV_CALLER', None),
+            "gac": app.config.get('APTV_GAC', None),
+            "pfm": app.config.get('APTV_PFM', None),
+            "utsk": app.config.get('APTV_UTSK', None),
+            "v": app.config.get('APTV_V', None)
         }
 
-        room = get_room_data(url, params)
+        try:
+            room = get_room_data(url, params)
+        except:
+            abort(404)
         return render_template('aptv/room.html', room=room, country=country, lang=lang)
 
 

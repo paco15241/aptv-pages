@@ -17,31 +17,26 @@ class views:
             "utsk": "e2648c8552395150::::::ac0e30f9a5790f93",
             "v": "36"
         }
-        
-        # data = get_landing_data(url, params)
 
         shelves = get_landing_data(url, params)
         return render_template('aptv/landing.html', shelves=shelves, country=country, lang=lang)
 
-    def collection(country, lang, shelf_id):
+    def collection(country, lang, collection_id):
+        url = f'https://uts-api.itunes.apple.com/uts/v2/browse/collection/{collection_id}'
 
-        return 'Hello'
+        params = {
+            "caller": "js",
+            "gac": "true",
+            "locale": f"{lang}",
+            "nextToken": "0",
+            "pfm": "iphone",
+            "sf": "143470",
+            "utsk": "e2648c8552395150::::::ac0e30f9a5790f93",
+            "v": "36"
+        }
 
-
-# def get_landing_data(url, params):
-#     shelves = []
-#     nextToken = 0
-#     while True:
-#         params['nextToken'] = nextToken
-#         res = requests.get(url, params=params)
-#         data = json.loads(res.text)
-#
-#         shelves.extend(data.get('data', {}).get('canvas', {}).get('shelves', []))
-#
-#         nextToken = data.get('data', {}).get('canvas', {}).get('nextToken')
-#         if not nextToken:
-#             break
-#     return shelves
+        collection = get_collection_data(url, params)
+        return render_template('aptv/collection.html', collection=collection, country=country, lang=lang)
 
 
 def get_landing_data(url, params):
@@ -103,3 +98,50 @@ def get_landing_data(url, params):
             break
 
     return shelves
+
+
+def get_collection_data(url, params):
+    collection = {
+        'collection_title': '',
+        'collection_id': '',
+        'collection_items': []
+    }
+    nextToken = 0
+    while True:
+        params['nextToken'] = nextToken
+        res = requests.get(url, params=params)
+        data = json.loads(res.text)
+
+        collection_title = data.get('data', {}).get('title', '')
+        collection_id = data.get('data', {}).get('id', '')
+
+        collection['collection_title'] = collection['collection_title'] if collection[
+            'collection_title'] else collection_title
+        collection['collection_id'] = collection['collection_id'] if collection['collection_id'] else collection_id
+
+        for item in data.get('data', {}).get('items', []):
+            item_id = item.get('id', '')
+            item_type = item.get('type', '')
+            item_title = item.get('title', '')
+            item_url = item.get('url', '')
+
+            image = item.get('images', {}).get('shelfImage', {})
+            image = image if image else item.get('images', {}).get('coverArt16X9', {})
+            image = image if image else item.get('images', {}).get('coverArt', {})
+            w = int(image['width'] * 225 / image['height']) if 'width' in image else 0
+            h = 225 if 'width' in image else 0
+            item_image_url = image.get('url', '').replace('{w}', str(w)).replace('{h}', str(h)).replace('{f}', 'png')
+
+            collection['collection_items'].append({
+                'item_id': item_id,
+                'item_type': item_type,
+                'item_title': item_title,
+                'item_url': item_url,
+                'item_image_url': item_image_url
+            })
+
+        nextToken = data.get('data', {}).get('nextToken')
+        if not nextToken:
+            break
+
+    return collection

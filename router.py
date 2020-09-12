@@ -9,6 +9,7 @@ def index():
 def landing_page(country, lang):
     return views.landing(country=country, lang=lang)
 
-@app.route('/<country>/<lang>/<shelf_id>')
-def collection_page(country, lang, shelf_id):
-    return views.collection(country=country, lang=lang, shelf_id=shelf_id)
+@app.route('/<country>/<lang>/collection/<collection_id>')
+def collection_page(country, lang, collection_id):
+    return views.collection(country=country, lang=lang, collection_id=collection_id)
+
